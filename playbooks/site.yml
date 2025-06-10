@@ -1,0 +1,11 @@
+- hosts: database
+  become: true
+  roles:
+    - postgres
+
+- hosts: monitoring
+  become: true
+  roles:
+    - prometheus
+    - grafana
+    - loki

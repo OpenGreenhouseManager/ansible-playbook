@@ -1,0 +1,18 @@
+# Docker image and container settings
+prometheus_image: prom/prometheus:latest
+prometheus_container_name: prometheus
+prometheus_port: 9090
+
+# Where to place the Prometheus config on the host
+prometheus_host_config_dir: /etc/prometheus
+prometheus_config_file: prometheus.yml
+
+# http_sd for your Rust services
+prometheus_http_sd_url: http://pi.local:8000/targets
+prometheus_http_sd_refresh: 30s
+
+# postgres_exporter settings
+postgres_exporter_image: quay.io/prometheuscommunity/postgres-exporter:latest
+postgres_exporter_container_name: postgres_exporter
+postgres_exporter_port: 9187
+postgres_exporter_data_source: "postgresql://admin:password@localhost:5432/postgres?sslmode=disable"

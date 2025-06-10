@@ -1,0 +1,54 @@
+- name: Ensure host config directory exists
+  file:
+    path: "{{ prometheus_host_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: Template out Prometheus config
+  template:
+    src: prometheus.yml.j2
+    dest: "{{ prometheus_host_config_dir }}/{{ prometheus_config_file }}"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+
+- name: Ensure Docker volume for Prometheus data
+  docker_volume:
+    name: prometheus_data
+
+- name: Start postgres_exporter container
+  docker_container:
+    name: "{{ postgres_exporter_container_name }}"
+    image: "{{ postgres_exporter_image }}"
+    restart_policy: always
+    env:
+      DATA_SOURCE_NAME: "{{ postgres_exporter_data_source }}"
+    published_ports:
+      - "{{ postgres_exporter_port }}:9187"
+    state: started
+
+- name: Start Prometheus container
+  docker_container:
+    name: "{{ prometheus_container_name }}"
+    image: "{{ prometheus_image }}"
+    restart_policy: always
+    published_ports:
+      - "{{ prometheus_port }}:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - "{{ prometheus_host_config_dir }}/{{ prometheus_config_file }}:/etc/prometheus/{{ prometheus_config_file }}"
+    state: started
+
+- name: Wait for Prometheus to be available
+  uri:
+    url: "http://localhost:{{ prometheus_port }}/-/ready"
+    method: GET
+    status_code: 200
+  register: prom_ready
+  until: prom_ready.status == 200
+  retries: 8
+  delay: 5
