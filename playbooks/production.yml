@@ -1,0 +1,3 @@
+- import_playbook: site.yml
+  vars:
+    ansible_inventory: inventory/production/hosts.yml

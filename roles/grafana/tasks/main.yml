@@ -27,23 +27,20 @@
 
 - name: Add Prometheus data source
   uri:
-    url: "http://localhost:{{ grafana_port }}/api/datasources"
+    url: http://localhost:{{ grafana_port }}/api/datasources
     method: POST
     user: "{{ grafana_admin_user }}"
     password: "{{ grafana_admin_password }}"
+    force_basic_auth: yes
+    status_code: 200,409
     body_format: json
-    headers:
-      Content-Type: application/json
-    body: |
-      {
-        "name": "Prometheus",
-        "type": "prometheus",
-        "access": "proxy",
-        "url": "{{ grafana_prometheus_url }}",
-        "isDefault": true
-      }
-    status_code: 200
-    ignore_errors: true # skip if already exists
+    body:
+      name: Prometheus
+      type: prometheus
+      access: proxy
+      url: "{{ grafana_prometheus_url }}"
+  register: result
+  ignore_errors: true # skip if already exists
 
 - name: Add Loki data source
   uri:
@@ -51,15 +48,12 @@
     method: POST
     user: "{{ grafana_admin_user }}"
     password: "{{ grafana_admin_password }}"
+    force_basic_auth: yes
     body_format: json
-    headers:
-      Content-Type: application/json
-    body: |
-      {
-        "name": "Loki",
-        "type": "loki",
-        "access": "proxy",
-        "url": "{{ grafana_loki_url }}"
-      }
+    body:
+      name: Loki
+      type: loki
+      access: proxy
+      url: "{{ grafana_loki_url }}"
     status_code: 200
-    ignore_errors: true
+  ignore_errors: true

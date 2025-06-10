@@ -1,42 +1,50 @@
-- name: Install PostgreSQL
+- name: Ensure docker is installed
   apt:
-    name: "postgresql-{{ postgres_version }}"
+    name: docker.io
     state: present
+    update_cache: true
   become: true
 
-- name: Ensure PostgreSQL is started and enabled
+- name: Ensure Docker service is running
   service:
-    name: postgresql
+    name: docker
     state: started
     enabled: true
   become: true
 
-- name: Configure PostgreSQL to listen on all interfaces
-  lineinfile:
-    path: "/etc/postgresql/{{ postgres_version }}/main/postgresql.conf"
-    regexp: '^#?listen_addresses\s*='
-    line: "listen_addresses = '{{ postgres_listen_addresses }}'"
-  notify: Restart PostgreSQL
+- name: Create a Docker volume for PostgreSQL data
+  docker_volume:
+    name: "{{ postgres_docker_volume }}"
   become: true
 
-- name: Allow connections from any host
-  lineinfile:
-    path: "/etc/postgresql/{{ postgres_version }}/main/pg_hba.conf"
-    insertafter: EOF
-    line: "host all all 0.0.0.0/0 md5"
-  notify: Restart PostgreSQL
+- name: Start PostgreSQL container
+  docker_container:
+    name: postgres
+    image: "{{ postgres_docker_image }}"
+    restart_policy: unless-stopped
+    env:
+      POSTGRES_USER: "{{ postgres_user }}"
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+      POSTGRES_DB: "{{ postgres_main_db }}"
+    ports:
+      - "{{ postgres_port }}:5432"
+    volumes:
+      - "{{ postgres_docker_volume }}:/var/lib/postgresql/data"
   become: true
 
-- name: Set PostgreSQL password
-  become_user: postgres
-  postgresql_user:
-    name: "{{ postgres_user }}"
-    password: "{{ postgres_password }}"
-    role_attr_flags: "LOGIN"
+- name: Wait for PostgreSQL to be available
+  wait_for:
+    host: "127.0.0.1"
+    port: "{{ postgres_port }}"
+    delay: 5
+    timeout: 30
 
-- name: Create PostgreSQL databases
-  become_user: postgres
-  postgresql_db:
-    name: "{{ item }}"
-    owner: "{{ postgres_user }}"
-  loop: "{{ postgres_databases }}"
+- name: Create PostgreSQL databases if they don't exist
+  shell: >
+    docker exec postgres psql -U admin -d auth -tAc
+    "SELECT 'CREATE DATABASE {{ item }}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{{ item }}')" |
+    docker exec -i postgres psql -U admin -d auth
+  loop:
+    - data
+    - device
+  changed_when: false
