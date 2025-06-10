@@ -1,8 +1,8 @@
 grafana_admin_user: admin
 grafana_admin_password: password
 
-grafana_prometheus_url: http://localhost:9090
-grafana_loki_url: http://localhost:3100
+grafana_prometheus_url: http://192.168.178.89:9090
+grafana_loki_url: http://192.168.178.89:3100
 
 grafana_container_name: grafana
 grafana_image: grafana/grafana:latest

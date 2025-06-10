@@ -1,17 +1,3 @@
-- name: Ensure docker is installed
-  apt:
-    name: docker.io
-    state: present
-    update_cache: true
-  become: true
-
-- name: Ensure Docker service is running
-  service:
-    name: docker
-    state: started
-    enabled: true
-  become: true
-
 - name: Create a Docker volume for PostgreSQL data
   docker_volume:
     name: "{{ postgres_docker_volume }}"
@@ -30,6 +16,9 @@
       - "{{ postgres_port }}:5432"
     volumes:
       - "{{ postgres_docker_volume }}:/var/lib/postgresql/data"
+    log_driver: loki
+    log_options:
+      loki-url: "http://localhost:3100/loki/api/v1/push"
   become: true
 
 - name: Wait for PostgreSQL to be available

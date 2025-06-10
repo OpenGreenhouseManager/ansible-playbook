@@ -15,4 +15,4 @@ prometheus_http_sd_refresh: 30s
 postgres_exporter_image: quay.io/prometheuscommunity/postgres-exporter:latest
 postgres_exporter_container_name: postgres_exporter
 postgres_exporter_port: 9187
-postgres_exporter_data_source: "postgresql://admin:password@localhost:5432/postgres?sslmode=disable"
+postgres_exporter_data_source: "postgresql://admin:password@192.168.178.89:5432/postgres?sslmode=disable"

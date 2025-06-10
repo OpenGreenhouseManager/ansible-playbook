@@ -16,6 +16,11 @@
     mode: "0644"
   become: true
 
+- name: Install Loki Docker logging plugin
+  ansible.builtin.shell: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+  args:
+    creates: /var/lib/docker/plugins
+
 - name: Ensure Docker volume for Loki data
   docker_volume:
     name: loki_data
@@ -35,7 +40,7 @@
 
 - name: Wait for Loki to be ready
   uri:
-    url: "http://localhost:{{ loki_port }}/ready"
+    url: "http://192.168.178.89:{{ loki_port }}/ready"
     method: GET
     status_code: 200
   register: loki_ready
