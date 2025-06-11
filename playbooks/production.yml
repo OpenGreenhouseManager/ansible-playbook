@@ -1,3 +1,19 @@
-- import_playbook: site.yml
-  vars:
-    ansible_inventory: inventory/production/hosts.yml
+- name: Setup docker
+  hosts: all
+  become: true
+  roles:
+    - docker_setup
+
+- name: Setup database
+  hosts: database
+  become: true
+  roles:
+    - postgres
+
+- name: Setup monitoring stack
+  hosts: monitoring
+  become: true
+  roles:
+    - prometheus
+    - grafana
+    - loki
