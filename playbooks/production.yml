@@ -3,6 +3,7 @@
   become: true
   roles:
     - docker_setup
+    - node_exporter
 
 - name: Setup database
   hosts: database

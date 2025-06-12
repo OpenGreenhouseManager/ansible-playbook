@@ -20,7 +20,7 @@
 
 - name: Wait for Grafana to be available
   uri:
-    url: "http://192.168.178.89:{{ grafana_port }}/api/health"
+    url: "http://192.168.178.96:{{ grafana_port }}/api/health"
     method: GET
     status_code: 200
   register: result
@@ -30,7 +30,7 @@
 
 - name: Add Prometheus data source
   uri:
-    url: http://192.168.178.89:{{ grafana_port }}/api/datasources
+    url: http://192.168.178.96:{{ grafana_port }}/api/datasources
     method: POST
     user: "{{ grafana_admin_user }}"
     password: "{{ grafana_admin_password }}"
@@ -47,7 +47,7 @@
 
 - name: Add Loki data source
   uri:
-    url: "http://192.168.178.89:{{ grafana_port }}/api/datasources"
+    url: "http://192.168.178.96:{{ grafana_port }}/api/datasources"
     method: POST
     user: "{{ grafana_admin_user }}"
     password: "{{ grafana_admin_password }}"

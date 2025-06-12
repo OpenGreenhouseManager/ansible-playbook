@@ -10,8 +10,12 @@ scrape_configs:
 
   - job_name: 'postgres'
     static_configs:
-      - targets: ["192.168.178.89:{{ postgres_exporter_port }}"]
+      - targets: ["192.168.178.96:{{ postgres_exporter_port }}"]
 
   - job_name: 'loki'
     static_configs:
-      - targets: ["192.168.178.89:3100"]
+      - targets: ["192.168.178.96:3100"]
+
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ["192.168.178.96:9100"]
