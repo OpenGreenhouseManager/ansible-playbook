@@ -16,11 +16,11 @@
     state: started
     log_driver: loki
     log_options:
-      loki-url: "http://localhost:3100/loki/api/v1/push"
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
 
 - name: Wait for Grafana to be available
   uri:
-    url: "http://{{ database_base_url }}:{{ grafana_port }}/api/health"
+    url: "{{ grafana_health_check }}"
     method: GET
     status_code: 200
   register: result
@@ -30,7 +30,7 @@
 
 - name: Add Prometheus data source
   uri:
-    url: http://{{ database_base_url }}:{{ grafana_port }}/api/datasources
+    url: "{{ grafana_datasources }}"
     method: POST
     user: "{{ grafana_admin_user }}"
     password: "{{ grafana_admin_password }}"
@@ -41,13 +41,13 @@
       name: Prometheus
       type: prometheus
       access: proxy
-      url: "{{ grafana_prometheus_url }}"
+      url: "{{ prometheus_url }}"
   register: result
   ignore_errors: true # skip if already exists
 
 - name: Add Loki data source
   uri:
-    url: "http://{{ database_base_url }}:{{ grafana_port }}/api/datasources"
+    url: "{{ grafana_datasources }}"
     method: POST
     user: "{{ grafana_admin_user }}"
     password: "{{ grafana_admin_password }}"
@@ -57,6 +57,6 @@
       name: Loki
       type: loki
       access: proxy
-      url: "{{ grafana_loki_url }}"
+      url: "{{ loki_url }}"
     status_code: 200
   ignore_errors: true
