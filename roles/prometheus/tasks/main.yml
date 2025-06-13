@@ -48,7 +48,7 @@
 
 - name: Wait for Prometheus to be available
   uri:
-    url: "http://192.168.178.96:{{ prometheus_port }}/-/ready"
+    url: "http://{{ database_base_url }}:{{ prometheus_port }}/-/ready"
     method: GET
     status_code: 200
   register: prom_ready

@@ -40,7 +40,7 @@
 
 - name: Wait for Loki to be ready
   uri:
-    url: "http://192.168.178.96:{{ loki_port }}/ready"
+    url: "http://{{ database_base_url }}:{{ loki_port }}/ready"
     method: GET
     status_code: 200
   register: loki_ready

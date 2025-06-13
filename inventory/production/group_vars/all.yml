@@ -1,0 +1,52 @@
+grafana_admin_user: admin
+grafana_admin_password: password
+database_base_url: 192.168.178.96
+grafana_prometheus_url: http://{{ database_base_url }}:9090
+grafana_loki_url: http://{{ database_base_url }}:3100
+
+grafana_container_name: grafana
+grafana_image: grafana/grafana:latest
+grafana_port: 3000
+
+loki_container_name: loki
+loki_image: grafana/loki:2.9.2
+loki_port: 3100
+
+# Simple local config file path
+loki_config_file: loki-config.yml
+loki_host_config_dir: /etc/loki
+
+node_exporter_version: "1.8.1"
+node_exporter_user: "nodeexp"
+node_exporter_port: 9100
+node_exporter_download_url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+
+postgres_version: "15"
+postgres_user: "admin"
+postgres_password: "password"
+postgres_main_db: "auth"
+postgres_extra_dbs:
+  - "data"
+  - "device"
+postgres_port: "5432"
+postgres_docker_image: "postgres:{{ postgres_version }}"
+postgres_docker_volume: "pgdata"
+
+# Docker image and container settings
+prometheus_image: prom/prometheus:latest
+prometheus_container_name: prometheus
+prometheus_port: 9090
+
+# Where to place the Prometheus config on the host
+prometheus_host_config_dir: /etc/prometheus
+prometheus_config_file: prometheus.yml
+
+# http_sd for your Rust services
+prometheus_http_sd_url: http://pi.local:8000/targets
+prometheus_http_sd_refresh: 30s
+
+# postgres_exporter settings
+postgres_exporter_image: quay.io/prometheuscommunity/postgres-exporter:latest
+postgres_exporter_container_name: postgres_exporter
+postgres_exporter_port: 9187
+postgres_exporter_data_source: "postgresql://admin:password@{{ database_base_url }}:5432/postgres?sslmode=disable"

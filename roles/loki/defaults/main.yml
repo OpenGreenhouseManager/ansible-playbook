@@ -1,7 +1,0 @@
-loki_container_name: loki
-loki_image: grafana/loki:2.9.2
-loki_port: 3100
-
-# Simple local config file path
-loki_config_file: loki-config.yml
-loki_host_config_dir: /etc/loki
