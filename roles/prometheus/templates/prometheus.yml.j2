@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+
+scrape_configs:
+  - job_name: 'http_sd'
+    http_sd_configs:
+      - url: "{{ prometheus_http_sd_url }}"
+        refresh_interval: "{{ prometheus_http_sd_refresh }}"
+
+  - job_name: 'postgres'
+    static_configs:
+      - targets: [{{ postgres_exporter_url }}]
+
+  - job_name: 'loki'
+    static_configs:
+      - targets: [{{ loki_url }}]
+
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: [{{ node_exporter_url }}]

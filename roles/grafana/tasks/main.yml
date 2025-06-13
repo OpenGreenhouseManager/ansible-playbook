@@ -1,0 +1,62 @@
+- name: Ensure Grafana Docker volume exists
+  docker_volume:
+    name: grafana_data
+- name: Create Grafana container
+  docker_container:
+    name: "{{ grafana_container_name }}"
+    image: "{{ grafana_image }}"
+    restart_policy: always
+    ports:
+      - "{{ grafana_port }}:3000"
+    env:
+      GF_SECURITY_ADMIN_USER: "{{ grafana_admin_user }}"
+      GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_admin_password }}"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    state: started
+    log_driver: loki
+    log_options:
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
+
+- name: Wait for Grafana to be available
+  uri:
+    url: "{{ grafana_health_check }}"
+    method: GET
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 10
+  delay: 5
+
+- name: Add Prometheus data source
+  uri:
+    url: "{{ grafana_datasources }}"
+    method: POST
+    user: "{{ grafana_admin_user }}"
+    password: "{{ grafana_admin_password }}"
+    force_basic_auth: yes
+    status_code: 200,409
+    body_format: json
+    body:
+      name: Prometheus
+      type: prometheus
+      access: proxy
+      url: "{{ prometheus_url }}"
+  register: result
+  ignore_errors: true # skip if already exists
+
+- name: Add Loki data source
+  uri:
+    url: "{{ grafana_datasources }}"
+    method: POST
+    user: "{{ grafana_admin_user }}"
+    password: "{{ grafana_admin_password }}"
+    force_basic_auth: yes
+    body_format: json
+    body:
+      name: Loki
+      type: loki
+      access: proxy
+      url: "{{ loki_url }}"
+    status_code: 200
+  ignore_errors: true

@@ -1,0 +1,20 @@
+- name: Setup docker
+  hosts: all
+  become: true
+  roles:
+    - docker_setup
+    - node_exporter
+
+- name: Setup database
+  hosts: database
+  become: true
+  roles:
+    - postgres
+
+- name: Setup monitoring stack
+  hosts: monitoring
+  become: true
+  roles:
+    - prometheus
+    - grafana
+    - loki

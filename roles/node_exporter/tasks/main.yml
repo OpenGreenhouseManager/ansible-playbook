@@ -1,0 +1,53 @@
+- name: Create user
+  ansible.builtin.user:
+    name: "{{ node_exporter_user }}"
+    shell: /usr/sbin/nologin
+
+- name: Install smartmontools
+  ansible.builtin.package:
+    name: smartmontools
+    state: present
+
+- name: Install SSD SMART metrics script
+  ansible.builtin.copy:
+    src: smart_metrics.sh
+    dest: /usr/local/bin/smart_metrics.sh
+    mode: "0755"
+
+- name: Set up cron job to update SMART metrics
+  ansible.builtin.cron:
+    name: "smart_metrics_export"
+    user: root
+    job: "/usr/local/bin/smart_metrics.sh"
+    minute: "*/2"
+
+- name: Download Node Exporter
+  ansible.builtin.get_url:
+    url: "{{ node_exporter_download_url }}"
+    dest: /tmp/node_exporter.tar.gz
+    mode: "0644"
+
+- name: Extract Node Exporter
+  ansible.builtin.unarchive:
+    src: /tmp/node_exporter.tar.gz
+    dest: /opt/
+    remote_src: yes
+
+- name: Symlink binary
+  ansible.builtin.file:
+    src: "/opt/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+    dest: /usr/local/bin/node_exporter
+    state: link
+
+- name: Install systemd service
+  ansible.builtin.copy:
+    src: node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+    mode: "0644"
+
+- name: Enable and start service
+  ansible.builtin.systemd:
+    name: node_exporter
+    enabled: true
+    state: started
+    daemon_reload: yes

@@ -1,0 +1,49 @@
+- name: Ensure Loki config directory exists
+  file:
+    path: "{{ loki_host_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: Deploy Loki config
+  template:
+    src: loki-config.yml.j2
+    dest: "{{ loki_host_config_dir }}/{{ loki_config_file }}"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+
+- name: Install Loki Docker logging plugin
+  ansible.builtin.shell: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+  args:
+    creates: /var/lib/docker/plugins
+
+- name: Ensure Docker volume for Loki data
+  docker_volume:
+    name: loki_data
+
+- name: Start Loki container
+  docker_container:
+    name: "{{ loki_container_name }}"
+    image: "{{ loki_image }}"
+    restart_policy: always
+    published_ports:
+      - "{{ loki_port }}:3100"
+    volumes:
+      - loki_data:/loki
+      - "{{ loki_host_config_dir }}/{{ loki_config_file }}:/etc/loki/local-config.yaml"
+    command: -config.file=/etc/loki/local-config.yaml
+    state: started
+
+- name: Wait for Loki to be ready
+  uri:
+    url: "{{ loki_health_check }}"
+    method: GET
+    status_code: 200
+  register: loki_ready
+  until: loki_ready.status == 200
+  retries: 8
+  delay: 5

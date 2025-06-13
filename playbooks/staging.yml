@@ -1,0 +1,10 @@
+- name: Setup docker
+  hosts: all
+  become: true
+  roles:
+    - docker_setup
+    - node_exporter
+    - postgres
+    - prometheus
+    - grafana
+    - loki

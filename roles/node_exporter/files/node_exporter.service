@@ -1,0 +1,10 @@
+[Unit]
+Description=Node Exporter
+After=network.target
+
+[Service]
+User=nodeexp
+ExecStart=/usr/local/bin/node_exporter --collector.textfile.directory=/var/lib/node_exporter/textfile_collector
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,16 @@
+- name: Ensure docker is installed
+  apt:
+    name: docker.io
+    state: present
+    update_cache: true
+  become: true
+
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: true
+  become: true
+
+- name: Ensure Loki Docker logging plugin is installed
+  ansible.builtin.shell: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions || true

@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ansible-vault-check
+        name: Check Ansible Vault Encryption
+        entry: ./hooks/check-vault-encrypted.sh
+        language: script
+        types: [file]
+        files: ^inventory/.*/group_vars/(?!all\.ya?ml$).*\.ya?ml$
