@@ -42,9 +42,9 @@
       - prometheus_data:/prometheus
       - "{{ prometheus_host_config_dir }}/{{ prometheus_config_file }}:/etc/prometheus/{{ prometheus_config_file }}"
     state: started
-    #log_driver: loki
-    #log_options:
-    #  loki-url: "http://{{ loki_url }}/loki/api/v1/push"
+    log_driver: loki
+    log_options:
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
 
 - name: Wait for Prometheus to be available
   uri:

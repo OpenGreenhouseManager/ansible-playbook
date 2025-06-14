@@ -23,7 +23,7 @@ grafana_port: 3000
 grafana_health_check: "http://{{ server_base_url }}:{{ grafana_port }}/api/health"
 grafana_datasources: http://{{ server_base_url }}:{{ grafana_port }}/api/datasources
 
-loki_url: "{{ server_base_url }}:{{ loki_port }}"
+loki_url: "http://{{ server_base_url }}:{{ loki_port }}"
 loki_container_name: loki
 loki_image: grafana/loki:2.9.2
 loki_port: 3100
