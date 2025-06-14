@@ -8,14 +8,15 @@ scrape_configs:
       - url: "{{ prometheus_http_sd_url }}"
         refresh_interval: "{{ prometheus_http_sd_refresh }}"
 
+
   - job_name: 'postgres'
     static_configs:
-      - targets: [{{ postgres_exporter_url }}]
+      - targets: {{ prometheus_postgres_targets | to_nice_yaml(indent=8) }}
 
   - job_name: 'loki'
     static_configs:
-      - targets: [{{ loki_url }}]
+      - targets: {{ prometheus_loki_targets | to_nice_yaml(indent=8) }}
 
   - job_name: 'node_exporter'
     static_configs:
-      - targets: [{{ node_exporter_url }}]
+      - targets: {{ prometheus_node_exporter_targets | to_nice_yaml(indent=8) }}

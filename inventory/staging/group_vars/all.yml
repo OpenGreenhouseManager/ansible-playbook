@@ -1,4 +1,4 @@
-base_url: 192.168.178.96
+server_base_url: 192.168.178.96
 
 postgres_version: "15"
 postgres_main_db: "auth"
@@ -13,20 +13,20 @@ postgres_docker_volume: "pgdata"
 postgres_exporter_image: quay.io/prometheuscommunity/postgres-exporter:latest
 postgres_exporter_container_name: postgres_exporter
 postgres_exporter_port: 9187
-postgres_exporter_data_source: "postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ base_url }}:{{ postgres_port }}/postgres?sslmode=disable"
-postgres_exporter_url: "{{ base_url }}:{{ postgres_exporter_port }}"
+postgres_exporter_data_source: "postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ server_base_url }}:{{ postgres_port }}/postgres?sslmode=disable"
+postgres_exporter_url: "{{ server_base_url }}:{{ postgres_exporter_port }}"
 
 grafana_container_name: grafana
 grafana_image: grafana/grafana:latest
 grafana_port: 3000
-grafana_health_check: "http://{{ base_url }}:{{ grafana_port }}/api/health"
-grafana_datasources: http://{{ base_url }}:{{ grafana_port }}/api/datasources
+grafana_health_check: "http://{{ server_base_url }}:{{ grafana_port }}/api/health"
+grafana_datasources: http://{{ server_base_url }}:{{ grafana_port }}/api/datasources
 
-loki_url: "{{ base_url }}:{{ loki_port }}"
+loki_url: "{{ server_base_url }}:{{ loki_port }}"
 loki_container_name: loki
 loki_image: grafana/loki:2.9.2
 loki_port: 3100
-loki_health_check: "http://{{ base_url }}:{{ loki_port }}/ready"
+loki_health_check: "http://{{ server_base_url }}:{{ loki_port }}/ready"
 loki_config_file: loki-config.yml
 loki_host_config_dir: /etc/loki
 
@@ -34,15 +34,21 @@ loki_host_config_dir: /etc/loki
 prometheus_image: prom/prometheus:latest
 prometheus_container_name: prometheus
 prometheus_port: 9090
-prometheus_url: "http://{{ base_url }}:{{ prometheus_port }}"
+prometheus_url: "http://{{ server_base_url }}:{{ prometheus_port }}"
 prometheus_host_config_dir: /etc/prometheus
 prometheus_config_file: prometheus.yml
-prometheus_health_check: "http://{{ base_url }}:{{ prometheus_port }}/-/ready"
+prometheus_health_check: "http://{{ server_base_url }}:{{ prometheus_port }}/-/ready"
 prometheus_http_sd_url: http://pi.local:8000/targets
 prometheus_http_sd_refresh: 30s
+prometheus_node_exporter_targets:
+  - "{{ server_base_url }}:{{ node_exporter_port }}"
+prometheus_postgres_targets:
+  - "{{ server_base_url }}:{{ postgres_exporter_port }}"
+prometheus_loki_targets:
+  - "{{ server_base_url }}:{{ loki_port }}"
 
 node_exporter_version: "1.8.1"
 node_exporter_user: "nodeexp"
 node_exporter_port: 9100
 node_exporter_download_url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
-node_exporter_url: "{{ base_url }}:{{ node_exporter_port }}"
+node_exporter_url: "{{ server_base_url }}:{{ node_exporter_port }}"
