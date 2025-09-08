@@ -1,0 +1,9 @@
+{
+  "mode": "{{ input_alert_trigger_mode }}",
+  "port": {{ input_alert_trigger_port }},
+  "datasource_id": "{{ input_alert_trigger_datasource_id }}",
+  "input_type": "{{ input_alert_trigger_input_type }}",
+  "output_type": {{ input_alert_trigger_output_type | to_json }},
+  "additional_config": {{ input_alert_trigger_additional_config | to_json }},
+  "scripting_api": {{ input_alert_trigger_scripting_api | to_json }}
+} 

@@ -1,0 +1,4 @@
+- name: restart input_alert_trigger
+  docker_container:
+    name: "{{ input_alert_trigger_container_name }}"
+    restart: true 

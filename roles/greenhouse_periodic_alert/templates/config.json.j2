@@ -1,0 +1,9 @@
+{
+  "mode": "{{ periodic_alert_mode }}",
+  "port": {{ periodic_alert_port }},
+  "datasource_id": "{{ periodic_alert_datasource_id }}",
+  "input_type": "{{ periodic_alert_input_type }}",
+  "output_type": {{ periodic_alert_output_type | to_json }},
+  "additional_config": {{ periodic_alert_additional_config | to_json }},
+  "scripting_api": {{ periodic_alert_scripting_api | to_json }}
+} 

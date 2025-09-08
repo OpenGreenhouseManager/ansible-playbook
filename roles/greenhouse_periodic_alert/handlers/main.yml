@@ -1,0 +1,4 @@
+- name: restart periodic_alert
+  docker_container:
+    name: "{{ periodic_alert_container_name }}"
+    restart: true 

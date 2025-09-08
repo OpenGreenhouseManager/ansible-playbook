@@ -1,0 +1,47 @@
+- name: Ensure config directory exists for input_alert_trigger
+  file:
+    path: "{{ input_alert_trigger_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: Template out input_alert_trigger config
+  template:
+    src: config.json.j2
+    dest: "{{ input_alert_trigger_config_dir }}/config.json"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: restart input_alert_trigger
+
+- name: Start input_alert_trigger container
+  docker_container:
+    name: "{{ input_alert_trigger_container_name }}"
+    image: "{{ input_alert_trigger_image }}"
+    restart_policy: unless-stopped
+    env:
+      RUST_LOG: "{{ input_alert_trigger_rust_log }}"
+      CONFIG_PATH: "/usr/local/bin/config/input_alert_trigger/config.json"
+    published_ports:
+      - "{{ input_alert_trigger_port }}:{{ input_alert_trigger_port }}"
+    volumes:
+      - "{{ input_alert_trigger_config_dir }}:/usr/local/bin/config/input_alert_trigger:ro"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ input_alert_trigger_port }}/status || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    state: started
+
+- name: Wait for input_alert_trigger to be available
+  uri:
+    url: "http://{{ base_url }}:{{ input_alert_trigger_port }}/status"
+    method: GET
+    status_code: 200
+  register: input_alert_trigger_ready
+  until: input_alert_trigger_ready.status == 200
+  retries: 8
+  delay: 5 

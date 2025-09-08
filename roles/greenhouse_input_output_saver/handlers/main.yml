@@ -1,0 +1,4 @@
+- name: restart input_output_saver
+  docker_container:
+    name: "{{ input_output_saver_container_name }}"
+    restart: true 

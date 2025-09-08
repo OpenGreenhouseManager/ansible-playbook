@@ -1,0 +1,47 @@
+- name: Ensure config directory exists for input_output_saver
+  file:
+    path: "{{ input_output_saver_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: Template out input_output_saver config
+  template:
+    src: config.json.j2
+    dest: "{{ input_output_saver_config_dir }}/config.json"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: restart input_output_saver
+
+- name: Start input_output_saver container
+  docker_container:
+    name: "{{ input_output_saver_container_name }}"
+    image: "{{ input_output_saver_image }}"
+    restart_policy: unless-stopped
+    env:
+      RUST_LOG: "{{ input_output_saver_rust_log }}"
+      CONFIG_PATH: "/usr/local/bin/config/input_output_saver/config.json"
+    published_ports:
+      - "{{ input_output_saver_port }}:{{ input_output_saver_port }}"
+    volumes:
+      - "{{ input_output_saver_config_dir }}:/usr/local/bin/config/input_output_saver:ro"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ input_output_saver_port }}/status || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    state: started
+
+- name: Wait for input_output_saver to be available
+  uri:
+    url: "http://{{ base_url }}:{{ input_output_saver_port }}/status"
+    method: GET
+    status_code: 200
+  register: input_output_saver_ready
+  until: input_output_saver_ready.status == 200
+  retries: 8
+  delay: 5 
