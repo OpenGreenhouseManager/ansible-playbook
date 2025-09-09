@@ -35,6 +35,7 @@
       timeout: 3s
       retries: 5
     state: started
+    pull: true
 
 - name: Wait for input_output_saver to be available
   uri:

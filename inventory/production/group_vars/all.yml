@@ -46,3 +46,50 @@ node_exporter_user: "nodeexp"
 node_exporter_port: 9100
 node_exporter_download_url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
 node_exporter_url: "{{ base_url }}:{{ node_exporter_port }}"
+
+# Greenhouse Services Configuration
+
+# Input Alert Trigger Service
+input_alert_trigger_image: ghcr.io/opengreenhousemanager/greenhouse_backend/examples:input_alert_trigger
+input_alert_trigger_container_name: greenhouse_input_alert_trigger
+input_alert_trigger_port: 6001
+input_alert_trigger_config_dir: /etc/greenhouse/input_alert_trigger
+input_alert_trigger_rust_log: "input_alert_trigger=debug,info"
+input_alert_trigger_mode: "InputOutput"
+input_alert_trigger_datasource_id: "7a224a14-6e07-45a3-91da-b7584a5731c1"
+input_alert_trigger_input_type: "Number"
+input_alert_trigger_output_type: null
+input_alert_trigger_additional_config:
+  min: 0
+  max: 10
+input_alert_trigger_scripting_api: null
+
+# Input Output Int Saver Service
+input_output_saver_image: ghcr.io/opengreenhousemanager/greenhouse_backend/examples:input_output_int_saver
+input_output_saver_container_name: greenhouse_input_output_saver
+input_output_saver_port: 6002
+input_output_saver_config_dir: /etc/greenhouse/input_output_saver
+input_output_saver_rust_log: "input_output_int_saver=debug,info"
+input_output_saver_mode: "InputOutput"
+input_output_saver_datasource_id: "7a224a14-6e07-45a3-91da-b7584a5731c1"
+input_output_saver_input_type: "Number"
+input_output_saver_output_type: "Number"
+input_output_saver_additional_config:
+  min: 0
+  max: 100
+input_output_saver_scripting_api: null
+
+# Periodic Alert Service
+periodic_alert_image: ghcr.io/opengreenhousemanager/greenhouse_backend/examples:periodic_alert
+periodic_alert_container_name: greenhouse_periodic_alert
+periodic_alert_port: 6003
+periodic_alert_config_dir: /etc/greenhouse/periodic_alert
+periodic_alert_rust_log: "periodic_alert=debug,info"
+periodic_alert_mode: "InputOutput"
+periodic_alert_datasource_id: "7a224a14-6e07-45a3-91da-b7584a5731c1"
+periodic_alert_input_type: "Number"
+periodic_alert_output_type: null
+periodic_alert_additional_config:
+  interval: 10
+  random_jitter: 5
+periodic_alert_scripting_api: null
