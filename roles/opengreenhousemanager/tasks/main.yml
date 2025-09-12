@@ -87,6 +87,9 @@
       - "{{ opengreenhousemanager_config_dir }}/data_storage:/usr/local/bin/config:ro"
     published_ports:
       - "{{ opengreenhousemanager_data_storage_port }}:{{ opengreenhousemanager_data_storage_port }}"
+    log_driver: loki
+    log_options:
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
     # healthcheck:
     #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_data_storage_port }}/health || exit 1"]
     #   interval: 10s
@@ -104,6 +107,9 @@
       - "{{ opengreenhousemanager_config_dir }}/auth_service:/usr/local/bin/config:ro"
     published_ports:
       - "{{ opengreenhousemanager_auth_service_port }}:{{ opengreenhousemanager_auth_service_port }}"
+    log_driver: loki
+    log_options:
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
     # healthcheck:
     #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_auth_service_port }}/health || exit 1"]
     #   interval: 10s
@@ -121,6 +127,9 @@
       - "{{ opengreenhousemanager_config_dir }}/scripting_service:/usr/local/bin/config:ro"
     published_ports:
       - "{{ opengreenhousemanager_scripting_service_port }}:{{ opengreenhousemanager_scripting_service_port }}"
+    log_driver: loki
+    log_options:
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
     # healthcheck:
     #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_scripting_service_port }}/health || exit 1"]
     #   interval: 10s
@@ -138,6 +147,9 @@
       - "{{ opengreenhousemanager_config_dir }}/device_service:/usr/local/bin/config:ro"
     published_ports:
       - "{{ opengreenhousemanager_device_service_port }}:{{ opengreenhousemanager_device_service_port }}"
+    log_driver: loki
+    log_options:
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
     # healthcheck:
     #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_device_service_port }}/health || exit 1"]
     #   interval: 10s
@@ -177,6 +189,9 @@
       - "{{ opengreenhousemanager_config_dir }}/web_api:/usr/local/bin/config:ro"
     published_ports:
       - "{{ opengreenhousemanager_web_api_port }}:{{ opengreenhousemanager_web_api_port }}"
+    log_driver: loki
+    log_options:
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
     # healthcheck:
     #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_web_api_port }}/health || exit 1"]
     #   interval: 10s
@@ -194,6 +209,9 @@
       - "{{ opengreenhousemanager_config_dir }}/script_api:/usr/local/bin/config:ro"
     published_ports:
       - "{{ opengreenhousemanager_script_api_port }}:{{ opengreenhousemanager_script_api_port }}"
+    log_driver: loki
+    log_options:
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
     # healthcheck:
     #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_script_api_port }}/health || exit 1"]
     #   interval: 10s

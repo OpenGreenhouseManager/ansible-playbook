@@ -29,6 +29,9 @@
       - "{{ periodic_alert_port }}:{{ periodic_alert_port }}"
     volumes:
       - "{{ periodic_alert_config_dir }}:/usr/local/bin/config/periodic_alert:ro"
+    log_driver: loki
+    log_options:
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:{{ periodic_alert_port }}/status || exit 1"]
       interval: 10s

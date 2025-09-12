@@ -29,6 +29,9 @@
       - "{{ input_alert_trigger_port }}:{{ input_alert_trigger_port }}"
     volumes:
       - "{{ input_alert_trigger_config_dir }}:/usr/local/bin/config/input_alert_trigger:ro"
+    log_driver: loki
+    log_options:
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:{{ input_alert_trigger_port }}/status || exit 1"]
       interval: 10s

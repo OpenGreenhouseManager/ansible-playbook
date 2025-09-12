@@ -29,6 +29,9 @@
       - "{{ input_output_saver_port }}:{{ input_output_saver_port }}"
     volumes:
       - "{{ input_output_saver_config_dir }}:/usr/local/bin/config/input_output_saver:ro"
+    log_driver: loki
+    log_options:
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:{{ input_output_saver_port }}/status || exit 1"]
       interval: 10s
