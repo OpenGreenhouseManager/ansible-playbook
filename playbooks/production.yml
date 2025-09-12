@@ -26,3 +26,9 @@
     - greenhouse_input_alert_trigger
     - greenhouse_input_output_saver
     - greenhouse_periodic_alert
+
+- name: Setup OpenGreenhouseManager application
+  hosts: all
+  become: true
+  roles:
+    - opengreenhousemanager

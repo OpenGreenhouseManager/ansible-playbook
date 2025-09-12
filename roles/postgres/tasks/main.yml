@@ -33,7 +33,5 @@
     docker exec postgres psql -U admin -d auth -tAc
     "SELECT 'CREATE DATABASE {{ item }}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{{ item }}')" |
     docker exec -i postgres psql -U admin -d auth
-  loop:
-    - data
-    - device
+  loop: "{{ postgres_extra_dbs }}"
   changed_when: false

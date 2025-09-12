@@ -1,0 +1,221 @@
+# Create config directories
+- name: Ensure config directories exist for OpenGreenhouseManager
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  loop:
+    - "{{ opengreenhousemanager_config_dir }}"
+    - "{{ opengreenhousemanager_config_dir }}/web_api"
+    - "{{ opengreenhousemanager_config_dir }}/script_api"
+    - "{{ opengreenhousemanager_config_dir }}/data_storage"
+    - "{{ opengreenhousemanager_config_dir }}/auth_service"
+    - "{{ opengreenhousemanager_config_dir }}/scripting_service"
+    - "{{ opengreenhousemanager_config_dir }}/device_service"
+
+# Template out specific environment files for each service
+- name: Template out web_api environment file
+  template:
+    src: web_api.env.j2
+    dest: "{{ opengreenhousemanager_config_dir }}/web_api/.env"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: restart web_api
+
+- name: Template out script_api environment file
+  template:
+    src: script_api.env.j2
+    dest: "{{ opengreenhousemanager_config_dir }}/script_api/.env"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: restart script_api
+
+- name: Template out data_storage environment file
+  template:
+    src: data_storage.env.j2
+    dest: "{{ opengreenhousemanager_config_dir }}/data_storage/.env"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: restart data_storage
+
+- name: Template out auth_service environment file
+  template:
+    src: auth_service.env.j2
+    dest: "{{ opengreenhousemanager_config_dir }}/auth_service/.env"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: restart auth_service
+
+- name: Template out scripting_service environment file
+  template:
+    src: scripting_service.env.j2
+    dest: "{{ opengreenhousemanager_config_dir }}/scripting_service/.env"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: restart scripting_service
+
+- name: Template out device_service environment file
+  template:
+    src: device_service.env.j2
+    dest: "{{ opengreenhousemanager_config_dir }}/device_service/.env"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: restart device_service
+
+# Start core services first (data storage and auth are dependencies)
+- name: Start data_storage container
+  docker_container:
+    name: "{{ opengreenhousemanager_data_storage_container_name }}"
+    image: "{{ opengreenhousemanager_data_storage_image }}"
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ opengreenhousemanager_config_dir }}/data_storage:/usr/local/bin/config:ro"
+    published_ports:
+      - "{{ opengreenhousemanager_data_storage_port }}:{{ opengreenhousemanager_data_storage_port }}"
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_data_storage_port }}/health || exit 1"]
+    #   interval: 10s
+    #   timeout: 3s
+    #   retries: 5
+    state: started
+    pull: true
+
+- name: Start auth_service container
+  docker_container:
+    name: "{{ opengreenhousemanager_auth_service_container_name }}"
+    image: "{{ opengreenhousemanager_auth_service_image }}"
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ opengreenhousemanager_config_dir }}/auth_service:/usr/local/bin/config:ro"
+    published_ports:
+      - "{{ opengreenhousemanager_auth_service_port }}:{{ opengreenhousemanager_auth_service_port }}"
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_auth_service_port }}/health || exit 1"]
+    #   interval: 10s
+    #   timeout: 3s
+    #   retries: 5
+    state: started
+    pull: true
+
+- name: Start scripting_service container
+  docker_container:
+    name: "{{ opengreenhousemanager_scripting_service_container_name }}"
+    image: "{{ opengreenhousemanager_scripting_service_image }}"
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ opengreenhousemanager_config_dir }}/scripting_service:/usr/local/bin/config:ro"
+    published_ports:
+      - "{{ opengreenhousemanager_scripting_service_port }}:{{ opengreenhousemanager_scripting_service_port }}"
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_scripting_service_port }}/health || exit 1"]
+    #   interval: 10s
+    #   timeout: 3s
+    #   retries: 5
+    state: started
+    pull: true
+
+- name: Start device_service container
+  docker_container:
+    name: "{{ opengreenhousemanager_device_service_container_name }}"
+    image: "{{ opengreenhousemanager_device_service_image }}"
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ opengreenhousemanager_config_dir }}/device_service:/usr/local/bin/config:ro"
+    published_ports:
+      - "{{ opengreenhousemanager_device_service_port }}:{{ opengreenhousemanager_device_service_port }}"
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_device_service_port }}/health || exit 1"]
+    #   interval: 10s
+    #   timeout: 3s
+    #   retries: 5
+    state: started
+    pull: true
+
+# Wait for core services to be available before starting APIs
+# - name: Wait for core services to be available
+#   uri:
+#     url: "http://{{ base_url }}:{{ item }}/health"
+#     method: GET
+#     status_code: 200
+#   register: service_ready
+#   until: service_ready.status == 200
+#   retries: 8
+#   delay: 5
+#   loop:
+#     - "{{ opengreenhousemanager_data_storage_port }}"
+#     - "{{ opengreenhousemanager_auth_service_port }}"
+#     - "{{ opengreenhousemanager_scripting_service_port }}"
+#     - "{{ opengreenhousemanager_device_service_port }}"
+
+# Add a simple delay instead of health checks
+- name: Wait for services to start
+  pause:
+    seconds: 10
+
+# Start API containers after services are ready
+- name: Start web_api container
+  docker_container:
+    name: "{{ opengreenhousemanager_web_api_container_name }}"
+    image: "{{ opengreenhousemanager_web_api_image }}"
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ opengreenhousemanager_config_dir }}/web_api:/usr/local/bin/config:ro"
+    published_ports:
+      - "{{ opengreenhousemanager_web_api_port }}:{{ opengreenhousemanager_web_api_port }}"
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_web_api_port }}/health || exit 1"]
+    #   interval: 10s
+    #   timeout: 3s
+    #   retries: 5
+    state: started
+    pull: true
+
+- name: Start script_api container
+  docker_container:
+    name: "{{ opengreenhousemanager_script_api_container_name }}"
+    image: "{{ opengreenhousemanager_script_api_image }}"
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ opengreenhousemanager_config_dir }}/script_api:/usr/local/bin/config:ro"
+    published_ports:
+      - "{{ opengreenhousemanager_script_api_port }}:{{ opengreenhousemanager_script_api_port }}"
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_script_api_port }}/health || exit 1"]
+    #   interval: 10s
+    #   timeout: 3s
+    #   retries: 5
+    state: started
+    pull: true
+
+# Final health checks for APIs
+# - name: Wait for APIs to be available
+#   uri:
+#     url: "http://{{ base_url }}:{{ item }}/health"
+#     method: GET
+#     status_code: 200
+#   register: api_ready
+#   until: api_ready.status == 200
+#   retries: 8
+#   delay: 5
+#   loop:
+#     - "{{ opengreenhousemanager_web_api_port }}"
+
+# Add a simple delay instead of health checks
+- name: Wait for APIs to start
+  pause:
+    seconds: 5 

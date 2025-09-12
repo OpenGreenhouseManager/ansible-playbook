@@ -1,0 +1,8 @@
+opengreenhousemanager_web_api_sentry_url: ""
+opengreenhousemanager_script_api_sentry_url: ""
+opengreenhousemanager_data_storage_sentry_url: ""
+opengreenhousemanager_auth_service_sentry_url: ""
+opengreenhousemanager_scripting_service_sentry_url: ""
+opengreenhousemanager_device_service_sentry_url: ""
+
+opengreenhousemanager_auth_service_jwt_secret: "asdasdasd"

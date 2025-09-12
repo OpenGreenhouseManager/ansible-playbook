@@ -5,6 +5,7 @@ postgres_main_db: "auth"
 postgres_extra_dbs:
   - "data"
   - "device"
+  - "scripting"
 postgres_port: "5432"
 postgres_docker_image: "postgres:{{ postgres_version }}"
 postgres_docker_volume: "pgdata"
@@ -93,3 +94,30 @@ periodic_alert_additional_config:
   interval: 10
   random_jitter: 5
 periodic_alert_scripting_api: null
+
+# OpenGreenhouseManager Application Configuration
+opengreenhousemanager_config_dir: /etc/opengreenhousemanager
+
+# Container images
+opengreenhousemanager_web_api_image: ghcr.io/opengreenhousemanager/web_api:latest
+opengreenhousemanager_script_api_image: ghcr.io/opengreenhousemanager/script_api:latest
+opengreenhousemanager_data_storage_image: ghcr.io/opengreenhousemanager/data_storage:latest
+opengreenhousemanager_auth_service_image: ghcr.io/opengreenhousemanager/auth_service:latest
+opengreenhousemanager_scripting_service_image: ghcr.io/opengreenhousemanager/scripting_service:latest
+opengreenhousemanager_device_service_image: ghcr.io/opengreenhousemanager/device_service:latest
+
+# Container names
+opengreenhousemanager_web_api_container_name: opengreenhousemanager_web_api
+opengreenhousemanager_script_api_container_name: opengreenhousemanager_script_api
+opengreenhousemanager_data_storage_container_name: opengreenhousemanager_data_storage
+opengreenhousemanager_auth_service_container_name: opengreenhousemanager_auth_service
+opengreenhousemanager_scripting_service_container_name: opengreenhousemanager_scripting_service
+opengreenhousemanager_device_service_container_name: opengreenhousemanager_device_service
+
+# Port configurations
+opengreenhousemanager_web_api_port: 5101
+opengreenhousemanager_script_api_port: 5102
+opengreenhousemanager_data_storage_port: 5001
+opengreenhousemanager_auth_service_port: 5002
+opengreenhousemanager_scripting_service_port: 5003
+opengreenhousemanager_device_service_port: 5004
