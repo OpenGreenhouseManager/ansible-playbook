@@ -4,7 +4,7 @@
     state: directory
     owner: root
     group: root
-    mode: "0755"
+    mode: "0777"
   become: true
 
 - name: Template out input_alert_trigger config
@@ -13,7 +13,7 @@
     dest: "{{ input_alert_trigger_config_dir }}/config.json"
     owner: root
     group: root
-    mode: "0644"
+    mode: "0666"
   become: true
   notify: restart input_alert_trigger
 
@@ -28,7 +28,7 @@
     published_ports:
       - "{{ input_alert_trigger_port }}:{{ input_alert_trigger_port }}"
     volumes:
-      - "{{ input_alert_trigger_config_dir }}:/usr/local/bin/config/input_alert_trigger:ro"
+      - "{{ input_alert_trigger_config_dir }}:/usr/local/bin/config/input_alert_trigger"
     log_driver: loki
     log_options:
       loki-url: "http://{{ loki_url }}/loki/api/v1/push"

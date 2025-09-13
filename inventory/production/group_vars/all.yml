@@ -100,7 +100,7 @@ opengreenhousemanager_config_dir: /etc/opengreenhousemanager
 
 # Version control - set this to specify which version to deploy (e.g., v0.1.0)
 # APIs and services will use this version, examples will always use latest
-opengreenhousemanager_version: "latest"
+opengreenhousemanager_version: "v0.1.0"
 
 # Container images - APIs and Services use versioned tags
 opengreenhousemanager_web_api_image: "ghcr.io/opengreenhousemanager/web_api:{{ opengreenhousemanager_version }}"

@@ -4,7 +4,7 @@
     state: directory
     owner: root
     group: root
-    mode: "0755"
+    mode: "0777"
   become: true
 
 - name: Template out input_output_saver config
@@ -13,7 +13,7 @@
     dest: "{{ input_output_saver_config_dir }}/config.json"
     owner: root
     group: root
-    mode: "0644"
+    mode: "0666"
   become: true
   notify: restart input_output_saver
 
@@ -28,7 +28,7 @@
     published_ports:
       - "{{ input_output_saver_port }}:{{ input_output_saver_port }}"
     volumes:
-      - "{{ input_output_saver_config_dir }}:/usr/local/bin/config/input_output_saver:ro"
+      - "{{ input_output_saver_config_dir }}:/usr/local/bin/config/input_output_saver"
     log_driver: loki
     log_options:
       loki-url: "http://{{ loki_url }}/loki/api/v1/push"
