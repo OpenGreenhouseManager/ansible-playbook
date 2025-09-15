@@ -100,15 +100,15 @@ opengreenhousemanager_config_dir: /etc/opengreenhousemanager
 
 # Version control - set this to specify which version to deploy (e.g., v0.1.0)
 # APIs and services will use this version, examples will always use latest
-opengreenhousemanager_version: "latest"
+opengreenhousemanager_backend_version: "latest"
 
 # Container images - APIs and Services use versioned tags
-opengreenhousemanager_web_api_image: "ghcr.io/opengreenhousemanager/web_api:{{ opengreenhousemanager_version }}"
-opengreenhousemanager_script_api_image: "ghcr.io/opengreenhousemanager/script_api:{{ opengreenhousemanager_version }}"
-opengreenhousemanager_data_storage_image: "ghcr.io/opengreenhousemanager/data_storage:{{ opengreenhousemanager_version }}"
-opengreenhousemanager_auth_service_image: "ghcr.io/opengreenhousemanager/auth_service:{{ opengreenhousemanager_version }}"
-opengreenhousemanager_scripting_service_image: "ghcr.io/opengreenhousemanager/scripting_service:{{ opengreenhousemanager_version }}"
-opengreenhousemanager_device_service_image: "ghcr.io/opengreenhousemanager/device_service:{{ opengreenhousemanager_version }}"
+opengreenhousemanager_web_api_image: "ghcr.io/opengreenhousemanager/web_api:{{ opengreenhousemanager_backend_version }}"
+opengreenhousemanager_script_api_image: "ghcr.io/opengreenhousemanager/script_api:{{ opengreenhousemanager_backend_version }}"
+opengreenhousemanager_data_storage_image: "ghcr.io/opengreenhousemanager/data_storage:{{ opengreenhousemanager_backend_version }}"
+opengreenhousemanager_auth_service_image: "ghcr.io/opengreenhousemanager/auth_service:{{ opengreenhousemanager_backend_version }}"
+opengreenhousemanager_scripting_service_image: "ghcr.io/opengreenhousemanager/scripting_service:{{ opengreenhousemanager_backend_version }}"
+opengreenhousemanager_device_service_image: "ghcr.io/opengreenhousemanager/device_service:{{ opengreenhousemanager_backend_version }}"
 
 # Container names
 opengreenhousemanager_web_api_container_name: opengreenhousemanager_web_api
