@@ -32,3 +32,4 @@
   become: true
   roles:
     - opengreenhousemanager
+    - angular_web

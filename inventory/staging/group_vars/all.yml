@@ -125,3 +125,8 @@ opengreenhousemanager_data_storage_port: 5001
 opengreenhousemanager_auth_service_port: 5002
 opengreenhousemanager_scripting_service_port: 5003
 opengreenhousemanager_device_service_port: 5004
+
+# Angular Web Application Configuration
+angular_web_image: "ghcr.io/opengreenhousemanager/greenhouse_web:latest"
+angular_web_container_name: greenhouse_web
+angular_web_port: 8080

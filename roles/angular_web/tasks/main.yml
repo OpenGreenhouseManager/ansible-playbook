@@ -1,0 +1,28 @@
+- name: Start Angular web container
+  docker_container:
+    name: "{{ angular_web_container_name }}"
+    image: "{{ angular_web_image }}"
+    restart_policy: unless-stopped
+    published_ports:
+      - "{{ angular_web_port }}:4200"
+    log_driver: loki
+    log_options:
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:4200/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    state: started
+    pull: true
+
+- name: Wait for Angular web to be available
+  uri:
+    url: "http://{{ base_url }}:{{ angular_web_port }}"
+    method: GET
+    status_code: 200
+  register: angular_web_ready
+  until: angular_web_ready.status == 200
+  retries: 10
+  delay: 5 
