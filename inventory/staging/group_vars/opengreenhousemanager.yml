@@ -5,4 +5,4 @@ opengreenhousemanager_auth_service_sentry_url: ""
 opengreenhousemanager_scripting_service_sentry_url: ""
 opengreenhousemanager_device_service_sentry_url: ""
 
-opengreenhousemanager_auth_service_jwt_secret: "asdasdasd"
+opengreenhousemanager_auth_service_jwt_secret: "asddasdasd"
