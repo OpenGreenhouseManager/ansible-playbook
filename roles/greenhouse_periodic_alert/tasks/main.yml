@@ -1,0 +1,51 @@
+- name: Ensure config directory exists for periodic_alert
+  file:
+    path: "{{ periodic_alert_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0777"
+  become: true
+
+- name: Template out periodic_alert config
+  template:
+    src: config.json.j2
+    dest: "{{ periodic_alert_config_dir }}/config.json"
+    owner: root
+    group: root
+    mode: "0666"
+  become: true
+  notify: restart periodic_alert
+
+- name: Start periodic_alert container
+  docker_container:
+    name: "{{ periodic_alert_container_name }}"
+    image: "{{ periodic_alert_image }}"
+    restart_policy: unless-stopped
+    env:
+      RUST_LOG: "{{ periodic_alert_rust_log }}"
+      CONFIG_PATH: "/usr/local/bin/config/periodic_alert/config.json"
+    published_ports:
+      - "{{ periodic_alert_port }}:{{ periodic_alert_port }}"
+    volumes:
+      - "{{ periodic_alert_config_dir }}:/usr/local/bin/config/periodic_alert"
+    log_driver: loki
+    log_options:
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ periodic_alert_port }}/status || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    state: started
+    pull: true
+
+- name: Wait for periodic_alert to be available
+  uri:
+    url: "http://{{ base_url }}:{{ periodic_alert_port }}/status"
+    method: GET
+    status_code: 200
+  register: periodic_alert_ready
+  until: periodic_alert_ready.status == 200
+  retries: 8
+  delay: 5

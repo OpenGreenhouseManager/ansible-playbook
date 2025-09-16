@@ -1,0 +1,29 @@
+- name: restart web_api
+  docker_container:
+    name: "{{ opengreenhousemanager_web_api_container_name }}"
+    restart: true
+
+- name: restart script_api
+  docker_container:
+    name: "{{ opengreenhousemanager_script_api_container_name }}"
+    restart: true
+
+- name: restart data_storage
+  docker_container:
+    name: "{{ opengreenhousemanager_data_storage_container_name }}"
+    restart: true
+
+- name: restart auth_service
+  docker_container:
+    name: "{{ opengreenhousemanager_auth_service_container_name }}"
+    restart: true
+
+- name: restart scripting_service
+  docker_container:
+    name: "{{ opengreenhousemanager_scripting_service_container_name }}"
+    restart: true
+
+- name: restart device_service
+  docker_container:
+    name: "{{ opengreenhousemanager_device_service_container_name }}"
+    restart: true 

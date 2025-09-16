@@ -1,0 +1,9 @@
+{
+  "mode": "{{ input_output_saver_mode }}",
+  "port": {{ input_output_saver_port }},
+  "datasource_id": "{{ input_output_saver_datasource_id }}",
+  "input_type": "{{ input_output_saver_input_type }}",
+  "output_type": {{ input_output_saver_output_type | to_json }},
+  "additional_config": {{ input_output_saver_additional_config | to_json }},
+  "scripting_api": {{ input_output_saver_scripting_api | to_json }}
+} 

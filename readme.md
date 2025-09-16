@@ -4,4 +4,6 @@ ansible-playbook -i inventory/staging/hosts.yml playbooks/staging.yml --ask-pass
 
 EDITOR='code --wait'
 
-source .venv/bin/activate
+python3 -m venv ./venv
+
+source ./venv/bin/activate

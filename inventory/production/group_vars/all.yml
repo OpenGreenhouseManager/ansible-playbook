@@ -1,10 +1,12 @@
 base_url: 192.168.178.96
+deployment_environment: "production"
 
 postgres_version: "15"
 postgres_main_db: "auth"
 postgres_extra_dbs:
   - "data"
   - "device"
+  - "scripting"
 postgres_port: "5432"
 postgres_docker_image: "postgres:{{ postgres_version }}"
 postgres_docker_volume: "pgdata"
@@ -46,3 +48,88 @@ node_exporter_user: "nodeexp"
 node_exporter_port: 9100
 node_exporter_download_url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
 node_exporter_url: "{{ base_url }}:{{ node_exporter_port }}"
+
+# Greenhouse Services Configuration
+
+# Input Alert Trigger Service
+input_alert_trigger_image: ghcr.io/opengreenhousemanager/greenhouse_backend/examples:input_alert_trigger
+input_alert_trigger_container_name: greenhouse_input_alert_trigger
+input_alert_trigger_port: 6001
+input_alert_trigger_config_dir: /etc/greenhouse/input_alert_trigger
+input_alert_trigger_rust_log: "input_alert_trigger=debug,info"
+input_alert_trigger_mode: "InputOutput"
+input_alert_trigger_datasource_id: "7a224a14-6e07-45a3-91da-b7584a5731c1"
+input_alert_trigger_input_type: "Number"
+input_alert_trigger_output_type: null
+input_alert_trigger_additional_config:
+  min: 0
+  max: 10
+input_alert_trigger_scripting_api: null
+
+# Input Output Int Saver Service
+input_output_saver_image: ghcr.io/opengreenhousemanager/greenhouse_backend/examples:input_output_int_saver
+input_output_saver_container_name: greenhouse_input_output_saver
+input_output_saver_port: 6002
+input_output_saver_config_dir: /etc/greenhouse/input_output_saver
+input_output_saver_rust_log: "input_output_int_saver=debug,info"
+input_output_saver_mode: "InputOutput"
+input_output_saver_datasource_id: "7a224a14-6e07-45a3-91da-b7584a5731c1"
+input_output_saver_input_type: "Number"
+input_output_saver_output_type: "Number"
+input_output_saver_additional_config:
+  min: 0
+  max: 100
+input_output_saver_scripting_api: null
+
+# Periodic Alert Service
+periodic_alert_image: ghcr.io/opengreenhousemanager/greenhouse_backend/examples:periodic_alert
+periodic_alert_container_name: greenhouse_periodic_alert
+periodic_alert_port: 6003
+periodic_alert_config_dir: /etc/greenhouse/periodic_alert
+periodic_alert_rust_log: "periodic_alert=debug,info"
+periodic_alert_mode: "InputOutput"
+periodic_alert_datasource_id: "7a224a14-6e07-45a3-91da-b7584a5731c1"
+periodic_alert_input_type: "Number"
+periodic_alert_output_type: null
+periodic_alert_additional_config:
+  interval: 10
+  random_jitter: 5
+periodic_alert_scripting_api: null
+
+# OpenGreenhouseManager Application Configuration
+opengreenhousemanager_config_dir: /etc/opengreenhousemanager
+
+# Version control - set this to specify which version to deploy (e.g., v0.1.0)
+# APIs and services will use this version, examples will always use latest
+opengreenhousemanager_backend_version: "v0.1.0"
+
+# Container images - APIs and Services use versioned tags
+opengreenhousemanager_web_api_image: "ghcr.io/opengreenhousemanager/web_api:{{ opengreenhousemanager_backend_version }}"
+opengreenhousemanager_script_api_image: "ghcr.io/opengreenhousemanager/script_api:{{ opengreenhousemanager_backend_version }}"
+opengreenhousemanager_data_storage_image: "ghcr.io/opengreenhousemanager/data_storage:{{ opengreenhousemanager_backend_version }}"
+opengreenhousemanager_auth_service_image: "ghcr.io/opengreenhousemanager/auth_service:{{ opengreenhousemanager_backend_version }}"
+opengreenhousemanager_scripting_service_image: "ghcr.io/opengreenhousemanager/scripting_service:{{ opengreenhousemanager_backend_version }}"
+opengreenhousemanager_device_service_image: "ghcr.io/opengreenhousemanager/device_service:{{ opengreenhousemanager_backend_version }}"
+
+# Container names
+opengreenhousemanager_web_api_container_name: opengreenhousemanager_web_api
+opengreenhousemanager_script_api_container_name: opengreenhousemanager_script_api
+opengreenhousemanager_data_storage_container_name: opengreenhousemanager_data_storage
+opengreenhousemanager_auth_service_container_name: opengreenhousemanager_auth_service
+opengreenhousemanager_scripting_service_container_name: opengreenhousemanager_scripting_service
+opengreenhousemanager_device_service_container_name: opengreenhousemanager_device_service
+
+# Port configurations
+opengreenhousemanager_web_api_port: 5101
+opengreenhousemanager_script_api_port: 5102
+opengreenhousemanager_data_storage_port: 5001
+opengreenhousemanager_auth_service_port: 5002
+opengreenhousemanager_scripting_service_port: 5003
+opengreenhousemanager_device_service_port: 5004
+
+# Angular Web Application Configuration
+opengreenhousemanager_web_version: "v0.0.1"
+
+angular_web_image: "ghcr.io/opengreenhousemanager/greenhouse_web:{{ opengreenhousemanager_web_version }}"
+angular_web_container_name: greenhouse_web
+angular_web_port: 8080
