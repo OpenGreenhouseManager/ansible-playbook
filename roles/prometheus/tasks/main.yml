@@ -15,6 +15,7 @@
     group: root
     mode: "0644"
   become: true
+  notify: restart prometheus
 
 - name: Ensure Docker volume for Prometheus data
   docker_volume:

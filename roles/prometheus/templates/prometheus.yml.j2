@@ -3,11 +3,6 @@ global:
   scrape_timeout: 10s
 
 scrape_configs:
-  - job_name: 'http_sd'
-    http_sd_configs:
-      - url: "{{ prometheus_http_sd_url }}"
-        refresh_interval: "{{ prometheus_http_sd_refresh }}"
-
   - job_name: 'postgres'
     static_configs:
       - targets: [{{ postgres_exporter_url }}]

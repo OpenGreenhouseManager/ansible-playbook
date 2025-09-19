@@ -90,11 +90,11 @@
     log_driver: loki
     log_options:
       loki-url: "http://{{ loki_url }}/loki/api/v1/push"
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_data_storage_port }}/health || exit 1"]
-    #   interval: 10s
-    #   timeout: 3s
-    #   retries: 5
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_data_storage_port }}/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     state: started
     pull: true
 
@@ -110,11 +110,11 @@
     log_driver: loki
     log_options:
       loki-url: "http://{{ loki_url }}/loki/api/v1/push"
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_auth_service_port }}/health || exit 1"]
-    #   interval: 10s
-    #   timeout: 3s
-    #   retries: 5
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_auth_service_port }}/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     state: started
     pull: true
 
@@ -130,11 +130,11 @@
     log_driver: loki
     log_options:
       loki-url: "http://{{ loki_url }}/loki/api/v1/push"
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_scripting_service_port }}/health || exit 1"]
-    #   interval: 10s
-    #   timeout: 3s
-    #   retries: 5
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_scripting_service_port }}/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     state: started
     pull: true
 
@@ -150,34 +150,29 @@
     log_driver: loki
     log_options:
       loki-url: "http://{{ loki_url }}/loki/api/v1/push"
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_device_service_port }}/health || exit 1"]
-    #   interval: 10s
-    #   timeout: 3s
-    #   retries: 5
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_device_service_port }}/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     state: started
     pull: true
 
 # Wait for core services to be available before starting APIs
-# - name: Wait for core services to be available
-#   uri:
-#     url: "http://{{ base_url }}:{{ item }}/health"
-#     method: GET
-#     status_code: 200
-#   register: service_ready
-#   until: service_ready.status == 200
-#   retries: 8
-#   delay: 5
-#   loop:
-#     - "{{ opengreenhousemanager_data_storage_port }}"
-#     - "{{ opengreenhousemanager_auth_service_port }}"
-#     - "{{ opengreenhousemanager_scripting_service_port }}"
-#     - "{{ opengreenhousemanager_device_service_port }}"
-
-# Add a simple delay instead of health checks
-- name: Wait for services to start
-  pause:
-    seconds: 10
+- name: Wait for core services to be available
+  uri:
+    url: "http://{{ base_url }}:{{ item }}/health"
+    method: GET
+    status_code: 200
+  register: service_ready
+  until: service_ready.status == 200
+  retries: 8
+  delay: 5
+  loop:
+    - "{{ opengreenhousemanager_data_storage_port }}"
+    - "{{ opengreenhousemanager_auth_service_port }}"
+    - "{{ opengreenhousemanager_scripting_service_port }}"
+    - "{{ opengreenhousemanager_device_service_port }}"
 
 # Start API containers after services are ready
 - name: Start web_api container
@@ -192,11 +187,11 @@
     log_driver: loki
     log_options:
       loki-url: "http://{{ loki_url }}/loki/api/v1/push"
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_web_api_port }}/health || exit 1"]
-    #   interval: 10s
-    #   timeout: 3s
-    #   retries: 5
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_web_api_port }}/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     state: started
     pull: true
 
@@ -212,28 +207,23 @@
     log_driver: loki
     log_options:
       loki-url: "http://{{ loki_url }}/loki/api/v1/push"
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_script_api_port }}/health || exit 1"]
-    #   interval: 10s
-    #   timeout: 3s
-    #   retries: 5
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_script_api_port }}/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     state: started
     pull: true
 
 # Final health checks for APIs
-# - name: Wait for APIs to be available
-#   uri:
-#     url: "http://{{ base_url }}:{{ item }}/health"
-#     method: GET
-#     status_code: 200
-#   register: api_ready
-#   until: api_ready.status == 200
-#   retries: 8
-#   delay: 5
-#   loop:
-#     - "{{ opengreenhousemanager_web_api_port }}"
-
-# Add a simple delay instead of health checks
-- name: Wait for APIs to start
-  pause:
-    seconds: 5 
+- name: Wait for APIs to be available
+  uri:
+    url: "http://{{ base_url }}:{{ item }}/health"
+    method: GET
+    status_code: 200
+  register: api_ready
+  until: api_ready.status == 200
+  retries: 8
+  delay: 5
+  loop:
+    - "{{ opengreenhousemanager_web_api_port }}"
