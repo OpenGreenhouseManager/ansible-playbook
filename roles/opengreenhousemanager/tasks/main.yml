@@ -227,3 +227,24 @@
   delay: 5
   loop:
     - "{{ opengreenhousemanager_web_api_port }}"
+
+# Create default users after auth service is ready
+- name: Ensure guest user exists (run on host)
+  ansible.builtin.command: >
+    curl -X POST http://{{ base_url }}:{{ opengreenhousemanager_auth_service_port }}/registerGuest
+      -H 'Content-Type: application/json'
+      -d '{"username":"{{ opengreenhousemanager_auth_service_guest_user }}","password":"{{ opengreenhousemanager_auth_service_guest_password }}"}'
+  register: guest_result
+  changed_when: "'201' in guest_result.stdout or '200' in guest_result.stdout"
+  delegate_to: "{{ inventory_hostname }}"
+  failed_when: false
+
+- name: Ensure admin user exists (run on host)
+  ansible.builtin.command: >
+    curl -X POST http://{{ base_url }}:{{ opengreenhousemanager_auth_service_port }}/registerAdmin
+      -H 'Content-Type: application/json'
+      -d '{"username":"{{ opengreenhousemanager_auth_service_admin_user }}","password":"{{ opengreenhousemanager_auth_service_admin_password }}"}'
+  register: admin_result
+  changed_when: "'201' in admin_result.stdout or '200' in admin_result.stdout"
+  delegate_to: "{{ inventory_hostname }}"
+  failed_when: false
