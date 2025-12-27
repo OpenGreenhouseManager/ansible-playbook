@@ -27,3 +27,8 @@
   docker_container:
     name: "{{ opengreenhousemanager_device_service_container_name }}"
     restart: true 
+
+- name: restart notification_service
+  docker_container:
+    name: "{{ opengreenhousemanager_notification_service_container_name }}"
+    restart: true

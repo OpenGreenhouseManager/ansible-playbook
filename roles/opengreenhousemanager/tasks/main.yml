@@ -15,6 +15,7 @@
     - "{{ opengreenhousemanager_config_dir }}/auth_service"
     - "{{ opengreenhousemanager_config_dir }}/scripting_service"
     - "{{ opengreenhousemanager_config_dir }}/device_service"
+    - "{{ opengreenhousemanager_config_dir }}/notification_service"
 
 # Template out specific environment files for each service
 - name: Template out web_api environment file
@@ -76,6 +77,26 @@
     mode: "0644"
   become: true
   notify: restart device_service
+
+- name: Template out notification_service environment file
+  template:
+    src: notification_service.env.j2
+    dest: "{{ opengreenhousemanager_config_dir }}/notification_service/.env"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: restart notification_service
+# look for better way to do this
+- name: Install VAPID private key for notification_service (if provided)
+  copy:
+    content: "{{ opengreenhousemanager_notification_service_vapid_private_key_pem }}" 
+    dest: "{{ opengreenhousemanager_config_dir }}/notification_service/vapid_private_key.pem"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  when: opengreenhousemanager_notification_service_vapid_private_key_pem is defined
 
 # Start core services first (data storage and auth are dependencies)
 - name: Start data_storage container
@@ -158,6 +179,26 @@
     state: started
     pull: true
 
+- name: Start notification_service container
+  docker_container:
+    name: "{{ opengreenhousemanager_notification_service_container_name }}"
+    image: "{{ opengreenhousemanager_notification_service_image }}"
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ opengreenhousemanager_config_dir }}/notification_service:/usr/local/bin/config:ro"
+    published_ports:
+      - "{{ opengreenhousemanager_notification_service_port }}:{{ opengreenhousemanager_notification_service_port }}"
+    log_driver: loki
+    log_options:
+      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_notification_service_port }}/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    state: started
+    pull: true
+
 # Wait for core services to be available before starting APIs
 - name: Wait for core services to be available
   uri:
@@ -173,6 +214,7 @@
     - "{{ opengreenhousemanager_auth_service_port }}"
     - "{{ opengreenhousemanager_scripting_service_port }}"
     - "{{ opengreenhousemanager_device_service_port }}"
+    - "{{ opengreenhousemanager_notification_service_port }}"
 
 # Start API containers after services are ready
 - name: Start web_api container
