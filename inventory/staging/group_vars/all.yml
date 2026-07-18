@@ -44,9 +44,7 @@ prometheus_http_sd_url: http://pi.local:8000/targets
 prometheus_http_sd_refresh: 30s
 
 node_exporter_version: "1.8.1"
-node_exporter_user: "nodeexp"
 node_exporter_port: 9100
-node_exporter_download_url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
 node_exporter_url: "{{ base_url }}:{{ node_exporter_port }}"
 
 # Greenhouse Services Configuration

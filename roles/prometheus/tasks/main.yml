@@ -17,27 +17,27 @@
   become: true
   notify: restart prometheus
 
-- name: Ensure Docker volume for Prometheus data
-  docker_volume:
+- name: Ensure podman volume for Prometheus data
+  containers.podman.podman_volume:
     name: prometheus_data
 
 - name: Start postgres_exporter container
-  docker_container:
+  containers.podman.podman_container:
     name: "{{ postgres_exporter_container_name }}"
     image: "{{ postgres_exporter_image }}"
     restart_policy: always
     env:
       DATA_SOURCE_NAME: "{{ postgres_exporter_data_source }}"
-    published_ports:
+    publish:
       - "{{ postgres_exporter_port }}:9187"
     state: started
 
 - name: Start Prometheus container
-  docker_container:
+  containers.podman.podman_container:
     name: "{{ prometheus_container_name }}"
     image: "{{ prometheus_image }}"
     restart_policy: always
-    published_ports:
+    publish:
       - "{{ prometheus_port }}:9090"
     volumes:
       - prometheus_data:/prometheus

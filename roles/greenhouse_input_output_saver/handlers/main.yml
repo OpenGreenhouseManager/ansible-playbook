@@ -1,4 +1,4 @@
 - name: restart input_output_saver
-  docker_container:
+  containers.podman.podman_container:
     name: "{{ input_output_saver_container_name }}"
-    restart: true 
+    force_restart: true

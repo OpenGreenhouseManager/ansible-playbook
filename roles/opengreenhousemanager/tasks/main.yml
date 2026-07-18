@@ -79,84 +79,68 @@
 
 # Start core services first (data storage and auth are dependencies)
 - name: Start data_storage container
-  docker_container:
+  containers.podman.podman_container:
     name: "{{ opengreenhousemanager_data_storage_container_name }}"
     image: "{{ opengreenhousemanager_data_storage_image }}"
     restart_policy: unless-stopped
     volumes:
       - "{{ opengreenhousemanager_config_dir }}/data_storage:/usr/local/bin/config:ro"
-    published_ports:
+    publish:
       - "{{ opengreenhousemanager_data_storage_port }}:{{ opengreenhousemanager_data_storage_port }}"
-    log_driver: loki
-    log_options:
-      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_data_storage_port }}/health || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
+    healthcheck: "curl -fsS http://localhost:{{ opengreenhousemanager_data_storage_port }}/health || exit 1"
+    healthcheck_interval: 10s
+    healthcheck_timeout: 3s
+    healthcheck_retries: 5
     state: started
-    pull: true
+    pull: always
 
 - name: Start auth_service container
-  docker_container:
+  containers.podman.podman_container:
     name: "{{ opengreenhousemanager_auth_service_container_name }}"
     image: "{{ opengreenhousemanager_auth_service_image }}"
     restart_policy: unless-stopped
     volumes:
       - "{{ opengreenhousemanager_config_dir }}/auth_service:/usr/local/bin/config:ro"
-    published_ports:
+    publish:
       - "{{ opengreenhousemanager_auth_service_port }}:{{ opengreenhousemanager_auth_service_port }}"
-    log_driver: loki
-    log_options:
-      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_auth_service_port }}/health || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
+    healthcheck: "curl -fsS http://localhost:{{ opengreenhousemanager_auth_service_port }}/health || exit 1"
+    healthcheck_interval: 10s
+    healthcheck_timeout: 3s
+    healthcheck_retries: 5
     state: started
-    pull: true
+    pull: always
 
 - name: Start scripting_service container
-  docker_container:
+  containers.podman.podman_container:
     name: "{{ opengreenhousemanager_scripting_service_container_name }}"
     image: "{{ opengreenhousemanager_scripting_service_image }}"
     restart_policy: unless-stopped
     volumes:
       - "{{ opengreenhousemanager_config_dir }}/scripting_service:/usr/local/bin/config:ro"
-    published_ports:
+    publish:
       - "{{ opengreenhousemanager_scripting_service_port }}:{{ opengreenhousemanager_scripting_service_port }}"
-    log_driver: loki
-    log_options:
-      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_scripting_service_port }}/health || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
+    healthcheck: "curl -fsS http://localhost:{{ opengreenhousemanager_scripting_service_port }}/health || exit 1"
+    healthcheck_interval: 10s
+    healthcheck_timeout: 3s
+    healthcheck_retries: 5
     state: started
-    pull: true
+    pull: always
 
 - name: Start device_service container
-  docker_container:
+  containers.podman.podman_container:
     name: "{{ opengreenhousemanager_device_service_container_name }}"
     image: "{{ opengreenhousemanager_device_service_image }}"
     restart_policy: unless-stopped
     volumes:
       - "{{ opengreenhousemanager_config_dir }}/device_service:/usr/local/bin/config:ro"
-    published_ports:
+    publish:
       - "{{ opengreenhousemanager_device_service_port }}:{{ opengreenhousemanager_device_service_port }}"
-    log_driver: loki
-    log_options:
-      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_device_service_port }}/health || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
+    healthcheck: "curl -fsS http://localhost:{{ opengreenhousemanager_device_service_port }}/health || exit 1"
+    healthcheck_interval: 10s
+    healthcheck_timeout: 3s
+    healthcheck_retries: 5
     state: started
-    pull: true
+    pull: always
 
 # Wait for core services to be available before starting APIs
 - name: Wait for core services to be available
@@ -176,44 +160,36 @@
 
 # Start API containers after services are ready
 - name: Start web_api container
-  docker_container:
+  containers.podman.podman_container:
     name: "{{ opengreenhousemanager_web_api_container_name }}"
     image: "{{ opengreenhousemanager_web_api_image }}"
     restart_policy: unless-stopped
     volumes:
       - "{{ opengreenhousemanager_config_dir }}/web_api:/usr/local/bin/config:ro"
-    published_ports:
+    publish:
       - "{{ opengreenhousemanager_web_api_port }}:{{ opengreenhousemanager_web_api_port }}"
-    log_driver: loki
-    log_options:
-      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_web_api_port }}/health || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
+    healthcheck: "curl -fsS http://localhost:{{ opengreenhousemanager_web_api_port }}/health || exit 1"
+    healthcheck_interval: 10s
+    healthcheck_timeout: 3s
+    healthcheck_retries: 5
     state: started
-    pull: true
+    pull: always
 
 - name: Start script_api container
-  docker_container:
+  containers.podman.podman_container:
     name: "{{ opengreenhousemanager_script_api_container_name }}"
     image: "{{ opengreenhousemanager_script_api_image }}"
     restart_policy: unless-stopped
     volumes:
       - "{{ opengreenhousemanager_config_dir }}/script_api:/usr/local/bin/config:ro"
-    published_ports:
+    publish:
       - "{{ opengreenhousemanager_script_api_port }}:{{ opengreenhousemanager_script_api_port }}"
-    log_driver: loki
-    log_options:
-      loki-url: "http://{{ loki_url }}/loki/api/v1/push"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:{{ opengreenhousemanager_script_api_port }}/health || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
+    healthcheck: "curl -fsS http://localhost:{{ opengreenhousemanager_script_api_port }}/health || exit 1"
+    healthcheck_interval: 10s
+    healthcheck_timeout: 3s
+    healthcheck_retries: 5
     state: started
-    pull: true
+    pull: always
 
 # Final health checks for APIs
 - name: Wait for APIs to be available

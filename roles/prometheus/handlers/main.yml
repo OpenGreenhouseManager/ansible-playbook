@@ -1,4 +1,4 @@
 - name: restart prometheus
-  docker_container:
+  containers.podman.podman_container:
     name: "{{ prometheus_container_name }}"
-    restart: true 
+    force_restart: true

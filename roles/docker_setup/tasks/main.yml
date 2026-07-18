@@ -1,16 +1,15 @@
-- name: Ensure docker is installed
-  apt:
-    name: docker.io
-    state: present
-    update_cache: true
-  become: true
-
-- name: Ensure Docker service is running
-  service:
-    name: docker
-    state: started
-    enabled: true
-  become: true
-
-- name: Ensure Loki Docker logging plugin is installed
-  ansible.builtin.shell: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions || true
+# NixOS host: the container engine (podman) is provided declaratively by the
+# server's NixOS configuration, not installed here. Ansible drives podman
+# through the containers.podman collection, which shells out to the `podman`
+# CLI on the host, so no Docker socket or Python SDK is required. Enable podman
+# on the server with:
+#
+#   virtualisation.podman.enable = true;
+#   virtualisation.podman.defaultNetwork.settings.dns_enabled = true;
+#
+# This role just verifies the podman engine is reachable before the other roles
+# start containers, so a missing/misconfigured engine fails fast with a clear
+# message.
+- name: Verify the podman engine is reachable
+  ansible.builtin.command: podman info
+  changed_when: false

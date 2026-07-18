@@ -1,4 +1,4 @@
 - name: restart periodic_alert
-  docker_container:
+  containers.podman.podman_container:
     name: "{{ periodic_alert_container_name }}"
-    restart: true 
+    force_restart: true
